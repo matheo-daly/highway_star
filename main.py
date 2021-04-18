@@ -1,0 +1,3 @@
+import Processor
+
+Processor.process()
