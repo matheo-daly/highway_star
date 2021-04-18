@@ -5,9 +5,14 @@ from rich.progress import track
 from typing import List
 
 
-def get_subcategories_names_from_category(category: str) -> List[str]:
+def get_subcategories_names_from_category(category: str, lang: str) -> List[str]:
     subcategories_names = []
-    soup: BeautifulSoup = BeautifulSoup(requests.get('https://fr.wikipedia.org/wiki/Catégorie:' + category).content,
+    category_root = ""
+    if lang == "fr":
+        category_root = 'https://fr.wikipedia.org/wiki/Catégorie:'
+    elif lang == "eng":
+        category_root = 'https://en.wikipedia.org/wiki/Category:'
+    soup: BeautifulSoup = BeautifulSoup(requests.get(category_root + category).content,
                                         "html.parser")
     category: BeautifulSoup = soup.findAll("div", {"class": "mw-category-generated"})[0]
     try:
@@ -20,18 +25,26 @@ def get_subcategories_names_from_category(category: str) -> List[str]:
     return subcategories_names
 
 
-def get_pages_from_category(category: str) -> dict:
+def get_pages_from_category(category: str, lang: str) -> dict:
     pages_names = []
     pages_links = []
     subcategory = []
-    soup: BeautifulSoup = BeautifulSoup(requests.get('https://fr.wikipedia.org/wiki/Catégorie:' + category)
+    category_root = ""
+    wikipedia_root = ""
+    if lang == "fr":
+        category_root = 'https://fr.wikipedia.org/wiki/Catégorie:'
+        wikipedia_root = "https://fr.wikipedia.org"
+    elif lang == "eng":
+        category_root = 'https://en.wikipedia.org/wiki/Category:'
+        wikipedia_root = "https://en.wikipedia.org/wiki/"
+    soup: BeautifulSoup = BeautifulSoup(requests.get(category_root + category)
                                         .content, "html.parser")
     try:
         category_generated: BeautifulSoup = soup.findAll("div", {"class": "mw-category-generated"})[0]
         pages: BeautifulSoup = category_generated.findAll("div", {"id": "mw-pages"})[0].findAll(
             "div", {"class": "mw-content-ltr"})[0].findAll("a")
         for page in pages:
-            pages_links.append("https://fr.wikipedia.org" + page["href"])
+            pages_links.append(wikipedia_root + page["href"])
             pages_names.append(page.get_text().replace(" ", "_"))
             subcategory.append(category)
     except IndexError:
@@ -40,28 +53,28 @@ def get_pages_from_category(category: str) -> dict:
     return pages_dictionary
 
 
-def scrap_wikipedia_structure(subcategories: List[str], pages_dictionary: dict = None) -> dict:
+def scrap_wikipedia_structure(subcategories: List[str], lang: str, pages_dictionary: dict = {"pages_links": [], "pages_names": [], "subcategory": []}) -> dict:
     if subcategories:
         new_subcategories: List[str] = []
         for names in track(subcategories, description="scrapping " + str(len(subcategories)) + " subcategories"):
-            new_subcategories.extend(get_subcategories_names_from_category(names))
-            pages: dict = get_pages_from_category(names)
+            new_subcategories.extend(get_subcategories_names_from_category(names, lang))
+            pages: dict = get_pages_from_category(names, lang)
             pages_dictionary["pages_links"].extend(pages["pages_links"])
             pages_dictionary["pages_names"].extend(pages["pages_names"])
             pages_dictionary["subcategory"].extend(pages["subcategory"])
-        return scrap_wikipedia_structure(subcategories=new_subcategories, pages_dictionary=pages_dictionary)
+        return scrap_wikipedia_structure(subcategories=new_subcategories, pages_dictionary=pages_dictionary, lang=lang)
     else:
         return pages_dictionary
 
 
-def get_biography_from_page_content(page_content: BeautifulSoup) -> str:
+def get_specific_content_from_page(page_content: BeautifulSoup, start_tag: str, end_tag: str) -> str:
     biography: str = ""
     try:
         paragraphs_in_biography: ResultSet = BeautifulSoup(
             str(page_content)
-                .split('<span class="mw-headline" id="Biographie">Biographie</span>')[1]
-                .split('<h2>')[0], "html.parser") \
-            .findAll("p")
+                .split(start_tag)[1]
+                .split(end_tag)[0], "html.parser") \
+                .findAll("p")
         for paragraphs in paragraphs_in_biography:
             biography += re.sub(r'\[.*\]', '',
                                 paragraphs
@@ -75,13 +88,17 @@ def get_biography_from_page_content(page_content: BeautifulSoup) -> str:
                                 .replace(";", " ; ")
                                 .replace(":", " : "))
     except IndexError:
-        biography: str = "no_biography"
+        biography: str = "no_matching_content"
     return biography
 
 
-def get_biographies_from_all_pages(all_pages_links: List[str]) -> List[str]:
-    biographies: List[str] = []
-    for link in track(all_pages_links, description="Getting all biographies from pages"):
+def get_content_from_all_pages(all_pages: dict, start_tag: str, end_tag: str) -> dict:
+    content: List[str] = []
+    for link in track(all_pages["pages_links"], description="Getting all content from pages"):
         page_content: BeautifulSoup = BeautifulSoup(requests.get(link).content, "html.parser")
-        biographies.append(get_biography_from_page_content(page_content))
-    return biographies
+        content.append(get_specific_content_from_page(
+            page_content=page_content,
+            start_tag=start_tag,
+            end_tag=end_tag))
+    all_pages["content"] = content
+    return all_pages
