@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="HighwayStar",
-    version="0.0.3",
+    name="highway_star",
+    version="0.0.2",
     author="Mathéo Daly",
     author_email="matheodaly.md@gmail.com",
     description="A library to scrap content from wikipedia categories",
