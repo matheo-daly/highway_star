@@ -1,4 +1,4 @@
-from scrapping import WikipediaScraper
+from highway_star.scrapping import WikipediaScraper
 WikipediaScraper.scrap_wikipedia_structure_with_content(
     root_category="Sexual_abuse_victim_advocates",
     start_tag='<span class="mw-headline" id="Death">Death</span>',
