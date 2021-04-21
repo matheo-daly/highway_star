@@ -53,7 +53,9 @@ def get_pages_from_category(category: str, lang: str) -> dict:
     return pages_dictionary
 
 
-def scrap_wikipedia_structure(subcategories: List[str], lang: str, pages_dictionary: dict = {"pages_links": [], "pages_names": [], "subcategory": []}) -> dict:
+def scrap_wikipedia_structure(subcategories: List[str], lang: str,
+                              pages_dictionary: dict = {"pages_links": [], "pages_names": [],
+                                                        "subcategory": []}) -> dict:
     if subcategories:
         new_subcategories: List[str] = []
         for names in track(subcategories, description="scrapping " + str(len(subcategories)) + " subcategories"):
@@ -74,7 +76,7 @@ def get_specific_content_from_page(page_content: BeautifulSoup, start_tag: str, 
             str(page_content)
                 .split(start_tag)[1]
                 .split(end_tag)[0], "html.parser") \
-                .findAll("p")
+            .findAll("p")
         for paragraphs in paragraphs_in_biography:
             biography += re.sub(r'\[.*\]', '',
                                 paragraphs
@@ -102,6 +104,7 @@ def get_content_from_all_pages(all_pages: dict, start_tag: str, end_tag: str) ->
             end_tag=end_tag))
     all_pages["content"] = content
     return all_pages
+
 
 def scrap_wikipedia_structure_with_content(root_category: str, start_tag: str, end_tag: str, lang: str):
     all_pages: dict = scrap_wikipedia_structure(subcategories=[root_category], lang=lang)
