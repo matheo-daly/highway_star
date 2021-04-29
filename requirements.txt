@@ -1,7 +1,5 @@
-beautifulsoup4~=4.9.3
-requests~=2.25.1
+beautifulsoup4
+requests
 regex
-rich~=10.1.0
+rich
 pandas
-setuptools~=56.0.0
-SPARQLWrapper~=1.8.5

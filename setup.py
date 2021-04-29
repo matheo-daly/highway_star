@@ -3,14 +3,9 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = []
-with open('requirements.txt', 'r') as fh:
-    for line in fh:
-        requirements.append(line.strip())
-
 setuptools.setup(
     name="highway_star",
-    version="0.0.3.6",
+    version="0.0.3.5",
     author="Mathéo Daly",
     author_email="matheodaly.md@gmail.com",
     description="A library to scrap content from wikipedia categories",
@@ -23,6 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=requirements,
     python_requires=">=3.6",
 )

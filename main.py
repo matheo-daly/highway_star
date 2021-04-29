@@ -4,7 +4,7 @@ WikipediaScraper.scrap_wikipedia_structure_with_content(
     start_tag='<span class="mw-headline" id="Death">Death</span>',
     end_tag='<h2>',
     lang="eng")
-wikipedia_scraper.scrap_wikipedia_structure_with_content(
+WikipediaScraper.scrap_wikipedia_structure_with_content(
     root_category="Suicide_par_pays",
     start_tag='<span class="mw-headline" id="Biographie">Biographie</span>',
     end_tag='<h2>',
