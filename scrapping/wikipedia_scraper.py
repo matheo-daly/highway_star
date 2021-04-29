@@ -3,6 +3,7 @@ import requests
 import re
 from rich.progress import track
 from typing import List
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 def get_subcategories_names_from_category(category: str, lang: str) -> List[str]:
@@ -53,7 +54,14 @@ def get_pages_from_category(category: str, lang: str) -> dict:
     return pages_dictionary
 
 
-def scrap_wikipedia_structure(subcategories: List[str], lang: str, pages_dictionary: dict = {"pages_links": [], "pages_names": [], "subcategory": []}) -> dict:
+def scrap_wikipedia_structure(subcategories: List[str], lang: str,
+                              pages_dictionary: dict = dict(pages_links=[], pages_names=[], subcategory=[])) -> dict:
+    """
+
+    :param lang:
+    :param subcategories:
+    :type pages_dictionary: object
+    """
     if subcategories:
         new_subcategories: List[str] = []
         for names in track(subcategories, description="scrapping " + str(len(subcategories)) + " subcategories"):
@@ -74,7 +82,7 @@ def get_specific_content_from_page(page_content: BeautifulSoup, start_tag: str, 
             str(page_content)
                 .split(start_tag)[1]
                 .split(end_tag)[0], "html.parser") \
-                .findAll("p")
+            .findAll("p")
         for paragraphs in paragraphs_in_biography:
             biography += re.sub(r'\[.*\]', '',
                                 paragraphs
@@ -103,7 +111,50 @@ def get_content_from_all_pages(all_pages: dict, start_tag: str, end_tag: str) ->
     all_pages["content"] = content
     return all_pages
 
-def scrap_wikipedia_structure_with_content(root_category: str, start_tag: str, end_tag: str, lang: str):
+
+def scrap_wikipedia_structure_with_content(root_category: str, start_tag: str, end_tag: str, lang: str) -> dict:
     all_pages: dict = scrap_wikipedia_structure(subcategories=[root_category], lang=lang)
     all_pages_with_content: dict = get_content_from_all_pages(all_pages=all_pages, start_tag=start_tag, end_tag=end_tag)
     return all_pages_with_content
+
+
+def query_resource_from_page_name(resource: str, all_names: List[str]) -> List[str]:
+    try:
+        all_names: List[str] = list(set(all_names))
+        resource_in_all_pages: List = []
+        for name in track(range(len(all_names)), description="Querying " + resource):
+            sparql: SPARQLWrapper = SPARQLWrapper("http://dbpedia.org/sparql")
+            if resource == "birthdate":
+                sparql.setQuery("""PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?birthdate
+                WHERE {
+                <http://dbpedia.org/resource/""" + all_names[name] + """> dbo:birthDate ?birthdate.}
+                """)
+            elif resource == "birthplace":
+                sparql.setQuery("""PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?birthplace
+                WHERE {
+                <http://dbpedia.org/resource/""" + all_names[name] + """> dbo:birthPlace ?birthplace.}
+                """)
+            elif resource == "deathdate":
+                sparql.setQuery("""PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?deathdate
+                WHERE {
+                <http://dbpedia.org/resource/""" + all_names[name] + """> dbo:deathDate ?deathdate.}
+                """)
+            elif resource == "deathplace":
+                sparql.setQuery("""PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?deathplace
+                WHERE {
+                <http://dbpedia.org/resource/""" + all_names[name] + """> dbo:deathPlace ?deathplace.}
+                """)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
+            if results["results"]["bindings"]:
+                results = results["results"]["bindings"][0]
+                resource_in_all_pages.append(results[resource]["value"])
+            else:
+                resource_in_all_pages.append(None)
+        return resource_in_all_pages
+    except KeyError:
+        print(resource, "is not a valid ressource name, please enter another one.")
