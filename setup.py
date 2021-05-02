@@ -10,7 +10,7 @@ with open('requirements.txt', 'r') as fh:
 
 setuptools.setup(
     name="highway_star",
-    version="0.0.4.8",
+    version="0.0.5",
     author="Mathéo Daly",
     author_email="matheodaly.md@gmail.com",
     description="A library to scrap content from wikipedia categories",
