@@ -1,3 +1,11 @@
+
+<head>
+ <!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+<!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/matheo-daly/highway_star/packages" data-color-scheme="no-preference: dark_dimmed; light: light; dark: dark_dimmed;" data-icon="octicon-package" aria-label="Install this package matheo-daly/highway_star on GitHub">Install this package</a>
+
 # highway_star
 >Scrap biographies from wikipedia categories and plot their life courses
 
