@@ -5,7 +5,7 @@
 The main goal of this project is to retrieve all biographies from a desired wikipedia category, and to plot the life course of those persons 
 with a sankey diagram. Those data could then be analyzed for social purpose. <br>
 This project was made in partnership with the [LEIRIS](https://www.univ-montp3.fr/fr/<nolink>/toutes-les-unités-de-recherche/leiris-laboratoire-détudes-interdisciplinaires-sur).
-# Installation
+## Installation
 
 ---
 You can install the project via `pip`, or any other `Pypi` package manager.
@@ -15,7 +15,8 @@ pip install highway-star
 ```
 
 >Note : you may need some more packages from spacy for Natural Language Processing. This may cause error during your execution.
-><br>Please run those commands in your console, or in a python script. 
+>
+>Please run those commands in your console, or in a python script. 
 
 ```bash 
 pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.0.0/fr_core_news_sm-2.0.0.tar.gz#egg=fr_core_news_sm==2.0.0
@@ -24,15 +25,14 @@ pip install https://github.com/explosion/spacy-models/releases/download/fr_core_
  python -m spacy download fr
 ```
 
-# How to use
+## How to use
 
 ---
-## Scrapping
+### Scrapping
 
-___
+---
 
->The function above allows you to scrap biographies from every page of 
->the categories and subcategories crawled by this one.
+>The function above allows you to scrap biographies from every page of the categories and subcategories crawled by this one.
 ````python
 from highway_star.scrapping.wikipedia_scraper import scrap_wikipedia_structure_with_content
 
@@ -71,18 +71,18 @@ To have an output like this <br>
 <br>
 Note that you have here :
 
-* **page_links** : links to the pages
-* **pages_names** : names of the pages
-* **subcategory** : category where the page was found
-* **content** : the content of the biography that has been scrapped
+*   **page_links** : links to the pages
+*   **pages_names** : names of the pages
+*   **subcategory** : category where the page was found
+*   **content** : the content of the biography that has been scrapped
 
-## Preprocessing
+### Preprocessing
 
 ___
 >Once you have retrieved your data, you may need to preprocess them. 
 
 In order to do that, we have two functions, one simple, and the other more complex. <br>
-###### Easy but not custom way
+#### Easy but not custom way
 ````python
 from highway_star.preprocessing.biography_preprocessor import sent_to_words
 sent_to_words(biographies_column=dataframe_with_biographies["biographies"])
@@ -92,7 +92,7 @@ sent_to_words(biographies_column=dataframe_with_biographies["biographies"])
 ````python
 content["biographies_tokenized"] = sent_to_words(biographies_column=dataframe_with_biographies["biographies"])
 ````
-###### Complex but custom way
+#### Complex but custom way
 
 >Note : To run this function, make sure to install following packages
 
@@ -108,11 +108,10 @@ remove_stop_words_from_biographies(biographies_column=dataframe_with_biographies
                                    allowed_postags=['NOUN', 'VERB'])
 ````
 This function does the tokenization, but also : 
-* allows you to choose custom `stop words`
-* filter biographies with `stop words` of the package ```spacy.load('fr_core_news_sm')```
-* allows you to use or not `lemmatization`
-* allows you to filter biographies by [parts of speech](https://en.wikipedia.org/wiki/Part_of_speech) (e.g., 'NOUN', 'VERB').
-
+*   allows you to choose custom `stop words`
+*   filter biographies with `stop words` of the package ```spacy.load('fr_core_news_sm')```
+*   allows you to use or not `lemmatization`
+*   allows you to filter biographies by [parts of speech](https://en.wikipedia.org/wiki/Part_of_speech) (e.g., 'NOUN', 'VERB').
 
 Default instantiation of this function is 
 ````python
@@ -120,23 +119,23 @@ from highway_star.preprocessing.biography_preprocessor import remove_stop_words_
 remove_stop_words_from_biographies(biographies_column=dataframe_with_biographies["biographies"])
 ````
 With non filled parameters set to default : 
-* **custom_stop_words** = `None`
-* **use_lemmatization** = `False`
-* **allowed_postags** = `None`
+*   **custom_stop_words** = `None`
+*   **use_lemmatization** = `False`
+*   **allowed_postags** = `None`
 
-## Visualizing
+### Visualizing
 
 ___
 
 >The visualization is done using Sankey Diagram, and the algorithm [prefixspan](https://pypi.org/project/prefixspan/)
-###### Prefixspan
+#### Prefixspan
 Prefixspan is an algorithm of Data Mining that retrieve the most frequent patterns in a set of data. <br>
 It was developed in 2001 by Pei, Han et. al, in [Mining Sequential Patterns Efficiently by Prefix-Projected Pattern Growth](http://hanj.cs.illinois.edu/pdf/span01.pdf). <br>
 It can be implemented in python using the Pypi library [prefixspan](https://pypi.org/project/prefixspan/). <br>
 Considering that a set of data is a set of biographies, it will retrieve most frequent patterns in our biographies. <br>
 We can manage the length of the patterns it will search.<br>
 The more your length pattern is high, the more you have a chance that those pattern globe all biographies from the start to the end, but you may not have many patterns.
-###### Sankey Diagram
+#### Sankey Diagram
 Those are great data visualization tools to plot relational data. <br>
 ![sankey](img/sankey.png)
 <br>
@@ -156,8 +155,8 @@ from highway_star.visualizing.visualizer import give_sankey_data_from_prefixspan
 give_sankey_data_from_prefixspan(dataframe_with_biographies["content_tokenized"])
 ````
 with : 
-* **prefixspan_minlen** = `10`
-* **prefixspan_topk** = `50`
+*   **prefixspan_minlen** = `10`
+*   **prefixspan_topk** = `50`
 
 The output of this function is already preprocessed prefixspan output for the sankey diagram. <br>
 It will count the number of relation couples of items have. <br>
@@ -167,12 +166,12 @@ born Alabama write song buy house
 born Alabama buy house
 born Europe write song buy house
 ````
-* born - Alabama = ``2``
-* buy - house = ``3``
-* write - song = ``2``
+*   born - Alabama = ``2``
+*   buy - house = ``3``
+*   write - song = ``2``
    
 Note that :
-* Alabama - house 
+*   Alabama - house 
 
 <br>is not a valid item, because the two items are not next to each others.<br>
 
@@ -185,10 +184,10 @@ sankey_diagram_with_prefixspan_output(sankey_data_from_prefixspan=sankey_data_fr
                                     title="Life course of Women French Actress")
 ````
 Where : 
-* **sankey_data_from_prefixspan** : the output of the previous function ``give_sankey_data_from_prefixspan``
-* **js_filename** : name of the js file
-* **html_filename** : name of the html file
-* **title** : title of the chart
+*   **sankey_data_from_prefixspan** : the output of the previous function ``give_sankey_data_from_prefixspan``
+*   **js_filename** : name of the js file
+*   **html_filename** : name of the html file
+*   **title** : title of the chart
 
 Default implementation is : 
 
@@ -198,9 +197,9 @@ sankey_diagram_with_prefixspan_output(sankey_data_from_prefixspan=sankey_data_fr
 ````
 
 Where : 
-* **js_filename** = ``data``
-* **html_filename** = ``page``
-* **title** =  ``None``
+*   **js_filename** = ``data``
+*   **html_filename** = ``page``
+*   **title** =  ``None``
 
 This will save locally two files. A html, and a Javascript. <br>
 Data of the function ``give_sankey_data_from_prefixspan`` is stocked into the Javascript file. <br>
