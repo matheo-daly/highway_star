@@ -1,4 +1,4 @@
-
+[![PyPI version](https://badge.fury.io/py/highway-star.svg)](https://badge.fury.io/py/highway-star)
 # highway_star
 >Scrap biographies from wikipedia categories and plot their life courses
 
