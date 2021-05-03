@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4739560ec4684edb88eaed60710426b4)](https://app.codacy.com/gh/matheo-daly/highway_star?utm_source=github.com&utm_medium=referral&utm_content=matheo-daly/highway_star&utm_campaign=Badge_Grade_Settings)
 [![PyPI version](https://badge.fury.io/py/highway-star.svg)](https://badge.fury.io/py/highway-star)
 # highway_star
 >Scrap biographies from wikipedia categories and plot their life courses
