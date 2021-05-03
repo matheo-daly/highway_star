@@ -56,12 +56,6 @@ def get_pages_from_category(category: str, lang: str) -> dict:
 
 def scrap_wikipedia_structure(subcategories: List[str], lang: str,
                               pages_dictionary: dict = dict(pages_links=[], pages_names=[], subcategory=[])) -> dict:
-    """
-
-    :param lang:
-    :param subcategories:
-    :type pages_dictionary: object
-    """
     if subcategories:
         new_subcategories: List[str] = []
         for names in track(subcategories, description="Crawling " + str(len(subcategories)) + " subcategories"):

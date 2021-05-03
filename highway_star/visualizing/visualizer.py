@@ -81,10 +81,10 @@ def sankey_diagram_with_prefixspan_output(sankey_data_from_prefixspan: list, js_
     if title is None:
         title = html_filename
     text_file = open(js_filename+".js", "w")
-    n = text_file.write(write_js(sankey_data_from_prefixspan, title=title))
+    text_file.write(write_js(sankey_data_from_prefixspan, title=title))
     text_file.close()
     print("js file written successfully !")
     text_file = open(html_filename + ".html", "w")
-    n = text_file.write(write_html(html_filename, js_filename))
+    text_file.write(write_html(html_filename, js_filename))
     text_file.close()
     print("html file written successfully !")
