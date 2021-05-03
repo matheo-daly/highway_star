@@ -4,12 +4,12 @@ import pandas
 from rich.progress import track
 
 
-def give_sankey_data_from_prefixspan(data_lemmatized: pandas.core.series.Series,
+def give_sankey_data_from_prefixspan(data_tokenized: pandas.core.series.Series,
                                      prefixspan_minlen=10,
                                      prefixspan_topk=50) -> object:
     t = time()
     print("Executing Prefixspan...")
-    prefixspan_initialized = PrefixSpan(data_lemmatized)
+    prefixspan_initialized = PrefixSpan(data_tokenized)
     prefixspan_initialized.minlen = prefixspan_minlen
     top_50 = prefixspan_initialized.topk(prefixspan_topk)
     print('Time to execute prefixspan: {} min'.format(round((time() - t) / 60, 2)))

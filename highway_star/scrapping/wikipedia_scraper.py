@@ -64,7 +64,7 @@ def scrap_wikipedia_structure(subcategories: List[str], lang: str,
     """
     if subcategories:
         new_subcategories: List[str] = []
-        for names in track(subcategories, description="scrapping " + str(len(subcategories)) + " subcategories"):
+        for names in track(subcategories, description="Crawling " + str(len(subcategories)) + " subcategories"):
             new_subcategories.extend(get_subcategories_names_from_category(names, lang))
             pages: dict = get_pages_from_category(names, lang)
             pages_dictionary["pages_links"].extend(pages["pages_links"])
@@ -112,7 +112,9 @@ def get_content_from_all_pages(all_pages: dict, start_tag: str, end_tag: str) ->
     return all_pages
 
 
-def scrap_wikipedia_structure_with_content(root_category: str, start_tag: str, end_tag: str, lang: str) -> dict:
+def scrap_wikipedia_structure_with_content(root_category: str, lang: str = "fr") -> dict:
+    start_tag = '<span class="mw-headline" id="Biographie">Biographie</span>'
+    end_tag = '<h2>'
     all_pages: dict = scrap_wikipedia_structure(subcategories=[root_category], lang=lang)
     all_pages_with_content: dict = get_content_from_all_pages(all_pages=all_pages, start_tag=start_tag, end_tag=end_tag)
     return all_pages_with_content
