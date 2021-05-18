@@ -52,5 +52,5 @@ def remove_stop_words_from_biographies(
     if custom_stop_words:
         stop_words.extend(custom_stop_words)
     if use_lemmatization:
-        tokenized_biographies = lemmatization(tokenized_biographies, allowed_postags=allowed_postags)
+        tokenized_biographies = lemmatization(tokenized_biographies, allowed_postags=allowed_postags, lang=lang)
     return remove_stopwords(tokenized_biographies=tokenized_biographies, stop_words=stop_words)
