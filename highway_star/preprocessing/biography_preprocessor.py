@@ -6,6 +6,7 @@ from typing import List
 from time import time
 import pandas
 from rich.progress import track
+import nltk
 
 
 def sent_to_words(biographies_column: pandas.core.series.Series) -> list:
@@ -17,10 +18,14 @@ def sent_to_words(biographies_column: pandas.core.series.Series) -> list:
     return biographies_tokenized
 
 
-def lemmatization(tokenized_biographies: list, allowed_postags=['NOUN', 'VERB']) -> list:
+def lemmatization(tokenized_biographies: list, allowed_postags=['NOUN', 'VERB'], lang: str = "fr") -> list:
     texts_out = []
     for sent in track(tokenized_biographies, description="lemmatize biographies"):
-        nlp = spacy.load('fr_core_news_sm')
+        nlp = ""
+        if lang == "fr":
+            nlp = spacy.load('fr_core_news_sm')
+        elif lang == "eng":
+            nlp = spacy.load('en_core_web_sm')
         doc = nlp(" ".join(sent))
         texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
     return texts_out
@@ -35,9 +40,15 @@ def remove_stop_words_from_biographies(
         biographies_column: pandas.core.series.Series,
         custom_stop_words: List[str] = None,
         use_lemmatization=False,
-        allowed_postags=['NOUN', 'VERB']) -> list:
+        allowed_postags=['NOUN', 'VERB'],
+        lang: str = "fr") -> list:
     tokenized_biographies: list = sent_to_words(biographies_column=biographies_column)
-    stop_words = stopwords.words('french')
+    nltk.download("stopwords")
+    stop_words: List[str] = [""]
+    if lang == "fr":
+        stop_words: List[str] = stopwords.words('french')
+    if lang == "eng":
+        stop_words: List[str] = stopwords.words('english')
     if custom_stop_words:
         stop_words.extend(custom_stop_words)
     if use_lemmatization:
