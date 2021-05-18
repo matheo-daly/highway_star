@@ -37,7 +37,7 @@ def get_pages_from_category(category: str, lang: str) -> dict:
         wikipedia_root = "https://fr.wikipedia.org"
     elif lang == "eng":
         category_root = 'https://en.wikipedia.org/wiki/Category:'
-        wikipedia_root = "https://en.wikipedia.org/wiki/"
+        wikipedia_root = "https://en.wikipedia.org/"
     soup: BeautifulSoup = BeautifulSoup(requests.get(category_root + category)
                                         .content, "html.parser")
     try:
@@ -73,10 +73,7 @@ def get_specific_content_from_page(page_content: BeautifulSoup, start_tag: str, 
     biography: str = ""
     try:
         paragraphs_in_biography: ResultSet = BeautifulSoup(
-            str(page_content)
-                .split(start_tag)[1]
-                .split(end_tag)[0], "html.parser") \
-            .findAll("p")
+            str(page_content).split(start_tag)[1].split(end_tag)[0], "html.parser").findAll("p")
         for paragraphs in paragraphs_in_biography:
             biography += re.sub(r'\[.*\]', '',
                                 paragraphs
@@ -90,28 +87,40 @@ def get_specific_content_from_page(page_content: BeautifulSoup, start_tag: str, 
                                 .replace(";", " ; ")
                                 .replace(":", " : "))
     except IndexError:
-        biography: str = "no_matching_content"
+        biography: str = ""
     return biography
 
 
-def get_content_from_all_pages(all_pages: dict, start_tag: str, end_tag: str) -> dict:
-    content: List[str] = []
+def get_content_from_all_pages(all_pages: dict, start_tag: List[str], end_tag: str) -> List[str]:
+    all_content: List[str] = []
     for link in track(all_pages["pages_links"], description="Getting all content from pages"):
         page_content: BeautifulSoup = BeautifulSoup(requests.get(link).content, "html.parser")
-        content.append(get_specific_content_from_page(
-            page_content=page_content,
-            start_tag=start_tag,
-            end_tag=end_tag))
-    all_pages["content"] = content
-    return all_pages
+        content = ""
+        for i in range(len(start_tag)):
+            content += " " + get_specific_content_from_page(page_content, start_tag[i], end_tag)
+        if content == "     " or content == " ":
+            content = "no_matching_content"
+        all_content.append(content)
+    return all_content
 
 
 def scrap_wikipedia_structure_with_content(root_category: str, lang: str = "fr") -> dict:
-    start_tag = '<span class="mw-headline" id="Biographie">Biographie</span>'
-    end_tag = '<h2>'
+    start_tag: List[str] = []
+    end_tag: str = ""
+    if lang == "fr":
+        start_tag = ['<span class="mw-headline" id="Biographie">Biographie</span>']
+        end_tag = '<h2>'
+    elif lang == "eng":
+        start_tag = ['<span class="mw-headline" id="Early_life">Early life</span>',
+                     '<span class="mw-headline" id="Early_life_and_career">Early life and career</span>',
+                     '<span class="mw-headline" id="Career">Career</span>',
+                     '<span class="mw-headline" id="Death">Death</span>',
+                     '<span class="mw-headline" id="Later_life_and_death">Later life and death</span>']
+        end_tag = '<h2>'
     all_pages: dict = scrap_wikipedia_structure(subcategories=[root_category], lang=lang)
-    all_pages_with_content: dict = get_content_from_all_pages(all_pages=all_pages, start_tag=start_tag, end_tag=end_tag)
-    return all_pages_with_content
+    content: List[str] = get_content_from_all_pages(all_pages=all_pages, start_tag=start_tag, end_tag=end_tag)
+    all_pages["content"]: dict = content
+    return all_pages
 
 
 def query_resource_from_page_name(resource: str, all_names: List[str]) -> List[str]:
