@@ -1,8 +1,8 @@
-from scrapping.wikipedia_scraper import scrap_wikipedia_structure_with_content
-from preprocessing.biography_preprocessor import sent_to_words
-from preprocessing.biography_preprocessor import remove_stop_words_from_biographies
-from visualizing.visualizer import give_sankey_data_from_prefixspan
-from visualizing.visualizer import sankey_diagram_with_prefixspan_output
+from highway_star.scrapping.wikipedia_scraper import scrap_wikipedia_structure_with_content
+from highway_star.preprocessing.biography_preprocessor import sent_to_words
+from highway_star.preprocessing.biography_preprocessor import remove_stop_words_from_biographies
+from highway_star.visualizing.visualizer import give_sankey_data_from_prefixspan
+from highway_star.visualizing.visualizer import sankey_diagram_with_prefixspan_output
 import pandas as pd
 
 
