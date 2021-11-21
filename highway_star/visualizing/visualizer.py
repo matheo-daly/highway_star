@@ -35,7 +35,7 @@ def give_sankey_data_from_prefixspan(data_tokenized: pandas.core.series.Series,
     return pandas.DataFrame(all_combinations).drop_duplicates().values.tolist()
 
 
-def write_js(sankey_data: list, title: str) -> str:
+def write_js(sankey_data: object, title: str) -> str:
     beginning_js = """Highcharts.chart('container', {
 
         title: {
@@ -76,7 +76,7 @@ def write_html(title: str, js_filename: str) -> str:
 </html>"""
 
 
-def sankey_diagram_with_prefixspan_output(sankey_data_from_prefixspan: list, js_filename="data", html_filename="page",
+def sankey_diagram_with_prefixspan_output(sankey_data_from_prefixspan: object, js_filename="data", html_filename="page",
                                           title=None):
     if title is None:
         title = html_filename
