@@ -10,4 +10,4 @@ nltk
 spacy
 prefixspan
 pandas
-
+numpy
